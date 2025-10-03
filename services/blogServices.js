@@ -71,3 +71,10 @@ exports.getPostsPaginated = async (query, page = 1, limit = 10) => {
 exports.getPostById = async (id) => {
   return await Post.findById(id);
 };
+
+exports.updatePost = async (id, data) => {
+  return await Post.findByIdAndUpdate(id, data, { new: true });
+};
+exports.deletePost = async (id) => {
+  return await Post.findByIdAndDelete(id);
+};
