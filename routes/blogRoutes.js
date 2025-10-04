@@ -5,9 +5,13 @@ const blogController = require('../controller/blogController');
 // Blog CRUD
 router.post('/posts', blogController.createPost);
 router.post('/posts/:id/comments', blogController.addComment);
-router.get('/posts', blogController.getAllPostsWithCommentCount);
+router.get('/posts/list', blogController.getAllPostsWithCommentCount);
 router.get('/posts/:id', blogController.getPostById)
 router.put('/posts/:id',blogController.updatePost)
+
+// Get Post by Pagination
+
+router.get('/posts', blogController.getPaginatedPosts); 
 
 // Routes for analytics
 const analyticsController = require('../controller/analyticsController');

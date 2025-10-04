@@ -102,3 +102,19 @@ exports.deletePost = async (req, res) => {
     return error(res, "Failed to delete post", 500, "server_error", err.message);
   }
 };
+
+exports.getPaginatedPosts = async (req, res) => {
+  try {
+    const { page = 1, limit = 5 } = req.query;
+    const data = await blogService.getPostsPaginated(req.query, parseInt(page), parseInt(limit));
+
+    if (!data.posts.length) {
+      return error(res, "No posts found", 404, "not_found");
+    }
+
+    return success(res, "Paginated posts fetched successfully", data);
+  } catch (err) {
+    console.error("Error in getPaginatedPosts:", err);
+    return error(res, "Failed to fetch paginated posts", 500, "server_error", err.message);
+  }
+};

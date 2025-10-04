@@ -1,9 +1,20 @@
 const Post = require('../models/Post');
 const Comment = require('../models/Comment');
-const mongoose = require('mongoose');
 
+// Dashboard Summary
 exports.getDashboardSummary = async () => {
-  // 1. Posts per day (last 7 days)
+  // ===== Total Stats =====
+  const totalPosts = await Post.countDocuments();
+  const totalComments = await Comment.countDocuments();
+
+  // Count distinct authors
+  const totalAuthorsAgg = await Post.aggregate([
+    { $group: { _id: "$author" } },
+    { $count: "authors" }
+  ]);
+  const totalAuthors = totalAuthorsAgg.length > 0 ? totalAuthorsAgg[0].authors : 0;
+
+  // ===== Posts per Day (last 7 days) =====
   const postsPerDay = await Post.aggregate([
     {
       $match: {
@@ -18,7 +29,7 @@ exports.getDashboardSummary = async () => {
     }
   ]);
 
-  // Map Mongo day numbers (1 = Sunday, 7 = Saturday)
+  // Map days
   const dayMap = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
   const dailyCounts = dayMap.map((day, i) => {
     const match = postsPerDay.find(p => p._id === i+1);
@@ -27,7 +38,7 @@ exports.getDashboardSummary = async () => {
 
   const todayPosts = dailyCounts[new Date().getDay()].count;
 
-  // 2. Comments per week (last 4 weeks)
+  // ===== Comments Over Time (last 4 weeks) =====
   const commentsOverTime = await Comment.aggregate([
     {
       $match: {
@@ -48,17 +59,18 @@ exports.getDashboardSummary = async () => {
     comments: c.count
   }));
 
-  const totalComments = await Comment.countDocuments();
-
   return {
+    totalPosts,
+    totalComments,
+    totalAuthors,
     postsPerDay: {
       today: todayPosts,
-      last7DaysChange: 15, // you can calculate growth %
+      last7DaysChange: 18, // TODO: replace with real % growth if needed
       dailyCounts
     },
     commentsOverTime: {
       total: totalComments,
-      last30DaysChange: 8, // placeholder %, can be calculated
+      last30DaysChange: 12, // TODO: replace with real % growth if needed
       weeklyCounts
     }
   };
