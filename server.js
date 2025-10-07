@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-
 const connectDB = require('./config/db');
 const Post = require('./models/Post');
 const Comment = require('./models/Comment');
@@ -16,13 +15,11 @@ app.use(bodyParser.json());
 // Connect to database
 connectDB();
 
-// --- Routes ---
+
 // Root route
 app.get('/', (req, res) => res.send('MERN Analytics Dashboard Backend Running'));
 
-// Add your CRUD and analytics routes here (see previous examples)
 
-// ...previous code...
 
 app.use('/api', blogRoutes);
 // ...rest unchanged...
